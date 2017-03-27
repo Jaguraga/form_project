@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>form</title>
+	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery-form-validator/2.3.26/jquery.form-validator.min.js"></script>
+</head>
+<body>
+  <script>
+   function validator(){
+      var name = document.forms['myForm']['title'].value;
+        if (name.length < 3) {
+          console.log("Can't happen, not tooday");
+         document.getElementById('error').innerHTML = 'Title field has to be greater than 3 characters';
+          $('#title').css('background', 'red').keyup(function(){
+            $(this).css('background', 'white');
+          });
+          return false;
+        }
+      var surname = document.forms['myForm']['descr'].value;
+      if (surname.length < 10) {
+        document.getElementById('error').innerHTML = 'Description field has to be greater than 10 characrters';
+        $('#descr').css('background', 'red').keyup(function(){
+            $(this).css('background', 'white');
+          });
+        return false;
+      }
+
+    return true;
+   }
+
+    $(document).ready(function(){
+      $('form').on('submit', function(e){
+        e.preventDefault();
+
+       
+        //$.get("http://ipinfo.io", function(response) {
+           //    response.ip.serialize;
+             //  }, "jsonp");
+         var valid = validator();
+        if (valid) { //this calls validator function and makes sure it's returning true
+          //console.log("Everything seems perfect");
+        //from here form would only send an ok if validator gives the green light
+
+
+
+        $.ajax({
+          type: 'post',
+          url: '../php/get_data.php',
+          data: $('form').serialize(),
+          success: function(){
+            $('body').append('<p> Data added successfully </p>')
+          }
+        });
+
+      }  else{  //validator ends here
+          //console.log('Invalid data. Sorry !');
+     }
+      });
+   });
+</script>
+  <form name="myForm">
+    <table>
+    <tr>
+    <td><label for="title">Title</label></td>
+  	<td><input type="text"  id="title" name="title" size="30" maxlength="60" data-validation="required"/></td>
+  	</tr>
+  	
+  	
+  	<tr>
+    <td><label for="descr">Decription</label></td>
+  	<td><textarea name="descr" id="descr" rows="5" cols="30" maxlength="200" size='30' data-validation="required"/></textarea></td>
+  	</tr>
+    
+    <tr>
+        <td><label for="image">Image</label></td>
+  		<td>
+  		 <input type="file" id="image" name="image" data-validation="mime size" data-validation-allowing="jpg, png, gif" data-validation-max-size="5M" data-validaton="required">
+  		 </td>
+  	</tr>
+  	<tr>
+  		<td><input type="hidden" name="browser"></td>
+  	</tr>
+
+  	<tr>
+  		<td><input type="hidden" name="ip_address"></td>
+  	</tr>
+
+  	<tr>
+  		<td><input type="submit" name="send"></td>
+  	</tr>
+    </table>
+  </form>
+  <p id="error"></p>
+</body>
+</html>
